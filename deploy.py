@@ -6,6 +6,7 @@ from web3 import Web3
 # from solcx import compile_standard
 from solcx import compile_standard, install_solc
 import os
+
 from dotenv import load_dotenv
 from web3.middleware import geth_poa_middleware
 
@@ -52,17 +53,21 @@ abi = json.loads(
 # chain_id = 4
 #
 # For connecting to ganache
-w3 = Web3(Web3.HTTPProvider("http://0.0.0.0:8545"))
-chain_id = 1337
+w3 = Web3(
+    Web3.HTTPProvider(
+        "https://sepolia.infura.io/v3/API_KEY_PROJECT"
+    )  # or localhost RPC Listening 127.0.0.1:8545
+)
+chain_id = 11155111  # I'm using sepolia testnet
 
-if chain_id == 4:
-    w3.middleware_onion.inject(geth_poa_middleware, layer=0)
-    print(w3.clientVersion)
-#Added print statement to ensure connection suceeded as per
-#https://web3py.readthedocs.io/en/stable/middleware.html#geth-style-proof-of-authority
+# if chain_id == 4:
+#     w3.middleware_onion.inject(geth_poa_middleware, layer=0)
+#     print(w3.clientVersion)
+# Added print statement to ensure connection suceeded as per
+# https://web3py.readthedocs.io/en/stable/middleware.html#geth-style-proof-of-authority
 
-my_address = "0x6aABE487828603b6f0a3E1C7DAcF7F42bA42A9B2"
-private_key = "8a63f5a3608d032ba652a323d62f333f71a895d253d6aa9f5defc16a43e4d7f1"
+my_address = "ACCOUNT_ADDRESS"
+private_key = os.getenv("PRIVATE_KEY")
 
 # Create the contract in Python
 SimpleStorage = w3.eth.contract(abi=abi, bytecode=bytecode)
@@ -72,7 +77,7 @@ nonce = w3.eth.getTransactionCount(my_address)
 transaction = SimpleStorage.constructor().buildTransaction(
     {
         "chainId": chain_id,
-        "gasPrice": w3.eth.gas_price,
+        # "gasPrice": w3.eth.gas_price,
         "from": my_address,
         "nonce": nonce,
     }
@@ -94,7 +99,7 @@ print(f"Initial Stored Value {simple_storage.functions.retrieve().call()}")
 greeting_transaction = simple_storage.functions.store(15).buildTransaction(
     {
         "chainId": chain_id,
-        "gasPrice": w3.eth.gas_price,
+        # "gasPrice": w3.eth.gas_price,
         "from": my_address,
         "nonce": nonce + 1,
     }
