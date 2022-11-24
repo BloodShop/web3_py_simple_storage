@@ -3,6 +3,7 @@
 1. Clone this repo
 
 ```
+https://github.com/BloodShop/web3_py_simple_storage.git
 cd web3_py_simple_storage
 ```
 
